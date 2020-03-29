@@ -2,6 +2,7 @@ package lv.rbs.ds.lab03
 
 import org.scalatest._
 import net.liftweb.json._
+import scala.io.Source
 
 class NAIVEmatcherTest extends FlatSpec with Matchers {
 
@@ -35,10 +36,24 @@ class NAIVEmatcherTest extends FlatSpec with Matchers {
   it should "return sufficiently long JSON" in {
     val matcher = new NAIVEmatcher("ABCDABD")
     val result = matcher.toJson("ABC ABCDAB ABCDABCDABDE")
+    //reflect.io.File("src/test/resources/sample01-naive.json").writeAll(result)
     result.length should be > 1000
   }
 
-  // **************************************************************************
+  // WARNING: Such tests are fragile! Try to avoid them.
+  // If this test fails on your environment, please comment it out.
+  // It's correctness may depend on Windows/Linux style line endings; and also - how you generate your JSON.
+  // There are more robust ways to test, if the structure of JSON is correct.
+  it should "return exact pretty-printed JSON text" in {
+    val expected = Source.fromFile("src/test/resources/sample01-naive.json").getLines.mkString("\n")
+    val matcher = new NAIVEmatcher("ABCDABD")
+    val result = matcher.toJson("ABC ABCDAB ABCDABCDABDE")
+    result should be(expected)
+  }
+
+
+
+    // **************************************************************************
   // Testing the returned JSON as a parsed data structure
   // **************************************************************************
   "A naive matcher" should "return 3 correct string fields" in {
